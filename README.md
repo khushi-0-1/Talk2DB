@@ -1,6 +1,6 @@
 # Talk2DB
 
-Enterprises struggle with complex, location bound database access and multilingual barriers. So an automated AI-driven platform is required for real-time, natural language interaction with databases accessible anytime, anywhere, by anyone. In database management beginners and nontechnical users, often struggle with writing SQL queries. This challenge motivated me create Talk2DB to ease writing queries. **Talk2DB** is an AI-powered Database handling platform that allows users to interact with real-time databases using NLP through text and voice input, from any location on the globe with multilingual support.
+Enterprises struggle with complex, location bound database access and multilingual barriers. So an automated AI-driven platform is required for real-time, natural language interaction with databases accessible anytime, anywhere, by anyone. In database management, beginners and nontechnical users, often struggle with writing SQL queries. This challenge motivated me create Talk2DB to ease writing queries. **Talk2DB** is an AI-powered Database handling platform that allows users to interact with real-time databases using NLP through text and voice input, from any location on the globe with multilingual support.
 
 ---
 
