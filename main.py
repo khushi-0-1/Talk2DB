@@ -18,7 +18,7 @@ store_all_table_structures(force_update=True)
 
 # Set page config must be the first Streamlit command
 st.set_page_config(
-    page_title="Query Wizard",
+    page_title="Talk2DB",
     layout="wide",
     page_icon="logo.png",
     initial_sidebar_state="expanded"
@@ -142,7 +142,7 @@ def get_sql_explanation(sql_query, target_language='en'):
     except Exception as e:
         return f"Error generating explanation: {str(e)}"
 
-st.title("Query Wizard")
+st.title("Talk2DB")
 
 # Sidebar configuration
 with st.sidebar:
