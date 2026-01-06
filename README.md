@@ -1,6 +1,6 @@
 # Talk2DB
 
-Enterprises struggle with complex, location bound database access and multilingual barriers. So an automated AI-driven platform is required for real-time, natural language interaction with databases accessible anytime, anywhere, by anyone. In database management, many individuals, such as beginners and nontechnical users, often struggle with writing SQL queries. This challenge motivated my team to create Query Wizard to ease writing queries. **Query Wizard 3.0** is an AI-powered Database handling platform that allows users to interact with real-time databases using NLP through text and voice input, from any location on the globe with multilingual support.
+Enterprises struggle with complex, location bound database access and multilingual barriers. So an automated AI-driven platform is required for real-time, natural language interaction with databases accessible anytime, anywhere, by anyone. In database management beginners and nontechnical users, often struggle with writing SQL queries. This challenge motivated me create Talk2DB to ease writing queries. **Talk2DB** is an AI-powered Database handling platform that allows users to interact with real-time databases using NLP through text and voice input, from any location on the globe with multilingual support.
 
 ---
 
@@ -11,8 +11,6 @@ Enterprises struggle with complex, location bound database access and multilingu
 - **Live SQL Execution**: Run generated queries directly on your **MySQL** database and view results instantly.
 - **Schema Preview**: Visualize database tables and column structures for better context.
 - **Multi-Language Support**: Interact in various languages, breaking down language barriers in data querying.
-- **User Authentication**: Secure login system to manage user access.
-- **Modular Architecture**: Easily extendable components for future enhancements.
 - **Explanation Box**: View simplified explanations of the generated SQL queries to understand their function.
 - **History Audits**: Track and view past queries, responses, and user activity for transparency and learning.
 
@@ -32,12 +30,11 @@ Enterprises struggle with complex, location bound database access and multilingu
 ## 📂 Project Structure
 
 ```
-Query_Wizard_3.0/
+Talk2DB/
 ├── __pycache__/              # Compiled bytecode files
 ├── ai_generator.py           # Handles AI-based SQL generation
 ├── db_config.py              # Database configuration settings
 ├── db_handler.py             # Functions for database connections and query execution
-├── login.py                  # User authentication logic
 ├── logo.png                  # Application logo
 ├── main.py                   # Main application script
 ├── mysql_schema.json         # Sample MySQL schema for reference
