@@ -1,7 +1,7 @@
-# requirements.txt
-
 streamlit
 mysql-connector-python
-googletrans==4.0.0-rc1
 speechrecognition
-pyaudio
+python-dotenv
+google-generativeai
+deep-translator
+pandas

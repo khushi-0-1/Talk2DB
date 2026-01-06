@@ -1,4 +1,5 @@
 # main.py
+import io
 import streamlit as st
 import speech_recognition as sr
 from db_handler import execute_query
@@ -12,6 +13,8 @@ from db_config import DB_CONFIG
 import pandas as pd
 import base64
 import time
+from schema_handler import store_all_table_structures
+store_all_table_structures(force_update=True)
 
 # Set page config must be the first Streamlit command
 st.set_page_config(
@@ -118,22 +121,6 @@ def update_user_input():
     if "input_text" in st.session_state:
         st.session_state["user_input"] = st.session_state["input_text"]
 
-def speech_to_text():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.write("🎙️ Listening... Please speak your query.")
-        recognizer.adjust_for_ambient_noise(source, duration=1)
-        audio = recognizer.listen(source, timeout=None, phrase_time_limit=None)
-
-    try:
-        text = recognizer.recognize_google(audio)
-        st.session_state["user_input"] = text
-        st.success(f" You said: {text}")
-    except sr.UnknownValueError:
-        st.error(" Could not understand the speech.")
-    except sr.RequestError as e:
-        st.error(f"Could not request results from Google Speech Recognition service; {e}")
-
 def get_sql_explanation(sql_query, target_language='en'):
     """
     Generates a concise explanation of the SQL query in the specified language.
@@ -206,6 +193,11 @@ with st.sidebar:
 st.markdown("### Enter Your Query")
 input_container = st.container()
 with input_container:
+    if "voice_text" in st.session_state:
+        st.session_state["user_input"] = st.session_state["voice_text"]
+        del st.session_state["voice_text"]
+        st.rerun()
+
     user_input = st.text_area(
         "Query Input",
         key="input_text",
@@ -218,8 +210,26 @@ with input_container:
 # First row of buttons
 row1_col1, row1_col2 = st.columns([1, 1])
 with row1_col1:
-    if st.button("Voice Input", key="voice_input"):
-        speech_to_text()
+    audio = st.audio_input("🎙️ Record your query")
+
+    if audio is not None:
+        recognizer = sr.Recognizer()
+        try:
+            audio_file = io.BytesIO(audio.read())
+            with sr.AudioFile(audio_file) as source:
+                audio_data = recognizer.record(source)
+
+            spoken_text = recognizer.recognize_google(audio_data)
+
+            st.session_state["voice_text"] = spoken_text
+
+            st.success(f"You said: {spoken_text}")
+
+        except sr.UnknownValueError:
+            st.error("Could not understand audio")
+        except sr.RequestError as e:
+            st.error(f"Speech recognition error: {e}")
+
 with row1_col2:
     if st.button("Generate SQL", key="generate_sql"):
         if st.session_state.get("user_input"):

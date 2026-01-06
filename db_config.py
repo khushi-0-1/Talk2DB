@@ -11,9 +11,9 @@ for var in required_vars:
         logging.warning(f"Missing environment variable: {var}")
 
 DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", "Rishi@27"),
-    "database": os.getenv("DB_NAME", "querywizard"),
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
 }
 
