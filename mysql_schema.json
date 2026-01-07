@@ -36,6 +36,33 @@
             "foreign_key": null
         }
     },
+    "query_logs": {
+        "id": {
+            "type": "int",
+            "primary_key": true,
+            "foreign_key": null
+        },
+        "user_id": {
+            "type": "int",
+            "primary_key": false,
+            "foreign_key": "users(id)"
+        },
+        "prompt": {
+            "type": "text",
+            "primary_key": false,
+            "foreign_key": null
+        },
+        "sql_query": {
+            "type": "text",
+            "primary_key": false,
+            "foreign_key": null
+        },
+        "created_at": {
+            "type": "datetime",
+            "primary_key": false,
+            "foreign_key": null
+        }
+    },
     "student": {
         "roll_number": {
             "type": "varchar(50)",
@@ -86,6 +113,23 @@
         },
         "number_of_colleges": {
             "type": "int",
+            "primary_key": false,
+            "foreign_key": null
+        }
+    },
+    "users": {
+        "id": {
+            "type": "int",
+            "primary_key": true,
+            "foreign_key": null
+        },
+        "username": {
+            "type": "varchar(50)",
+            "primary_key": false,
+            "foreign_key": null
+        },
+        "password": {
+            "type": "varchar(255)",
             "primary_key": false,
             "foreign_key": null
         }

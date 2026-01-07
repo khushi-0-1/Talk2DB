@@ -10,6 +10,7 @@ Enterprises struggle with complex, location bound database access and multilingu
 - **Voice Input Support**: Speak your queries—ideal for accessibility and hands-free environments.
 - **Live SQL Execution**: Run generated queries directly on your **MySQL** database and view results instantly.
 - **Schema Preview**: Visualize database tables and column structures for better context.
+- **User Authentication**: Secure login system to manage user access.
 - **Multi-Language Support**: Interact in various languages, breaking down language barriers in data querying.
 - **Explanation Box**: View simplified explanations of the generated SQL queries to understand their function.
 - **History Audits**: Track and view past queries, responses, and user activity for transparency and learning.
@@ -33,6 +34,7 @@ Enterprises struggle with complex, location bound database access and multilingu
 Talk2DB/
 ├── __pycache__/              # Compiled bytecode files
 ├── ai_generator.py           # Handles AI-based SQL generation
+├── auth_utils.py             # Contains authentication helper functions
 ├── db_config.py              # Database configuration settings
 ├── db_handler.py             # Functions for database connections and query execution
 ├── logo.png                  # Application logo
@@ -67,7 +69,7 @@ Talk2DB/
 
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   venv\Scripts\activate   #On MAC : source venv/bin/activate
    ```
 
 3. **Install Dependencies**
@@ -119,11 +121,3 @@ Talk2DB/
 ## 🚀 UI
 
 ![Screenshot 2025-05-12 160303](https://github.com/user-attachments/assets/4a2c7c1c-957c-4374-a7de-8cba7befd8f2)
-
----
-
-## 🚀 Sample TestCase
-
-![Screenshot 2025-05-12 160648](https://github.com/user-attachments/assets/fd148490-1af0-4662-8d73-6ce7cd162102)
-![Screenshot 2025-05-12 160736](https://github.com/user-attachments/assets/599b42bd-b208-4428-989c-7f8a3a60653c)
-![Screenshot 2025-05-12 160907](https://github.com/user-attachments/assets/8bee0649-8c22-4477-a478-f6e49439b221)

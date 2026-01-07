@@ -9,8 +9,10 @@ from deep_translator import GoogleTranslator
 import google.generativeai as genai
 from datetime import datetime
 import mysql.connector
+from mysql.connector import IntegrityError
 from db_config import DB_CONFIG
 import pandas as pd
+from auth_utils import hash_password, verify_password, is_valid_password, is_valid_username
 import base64
 import time
 from schema_handler import store_all_table_structures
@@ -26,11 +28,35 @@ st.set_page_config(
 
 # Load schema before using it
 schema = load_schema()
-tables = list(schema.keys())
+HIDDEN_TABLES = {"users", "query_logs"}
+tables = [t for t in schema.keys() if t not in HIDDEN_TABLES]
 
 # Custom CSS for better styling
 st.markdown("""
     <style>
+    .auth-box {
+        max-width: 360px;
+        margin: auto;
+        margin-top: 100px;
+        padding: 2rem;
+        border-radius: 12px;
+        background: #111;
+        box-shadow: 0 0 20px rgba(255,255,255,0.08);
+    }
+
+    .auth-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .small-input input {
+        height: 38px !important;
+    }
     .main {
         padding: 2rem;
     }
@@ -66,6 +92,18 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Initialize session state variables
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "user_id" not in st.session_state:
+    st.session_state.user_id = None
+
+if "username" not in st.session_state:
+    st.session_state.username = None
+
+if "auth_page" not in st.session_state:
+    st.session_state.auth_page = "login"  # login / signup
+
 if "show_details" not in st.session_state:
     st.session_state["show_details"] = False
 if "generated_sql" not in st.session_state:
@@ -141,6 +179,139 @@ def get_sql_explanation(sql_query, target_language='en'):
         return explanation
     except Exception as e:
         return f"Error generating explanation: {str(e)}"
+    
+def login_page():
+    st.markdown("<h2 style='text-align:center'>🔐 Login</h2>", unsafe_allow_html=True)
+
+    left, center, right = st.columns([2, 3, 2])
+
+    with center:
+        username = st.text_input("Username", key="login_user")
+        password = st.text_input("Password", type="password", key="login_pass")
+
+        st.write("")
+
+        col1, col2 = st.columns(2)
+
+        login_clicked = col1.button("Login", key="login_btn", use_container_width=True)
+        signup_clicked = col2.button("Signup", key="goto_signup", use_container_width=True)
+
+    if login_clicked:
+        if not username or not password:
+            st.warning("Please enter username and password")
+            return
+
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            "SELECT * FROM users WHERE username=%s",
+            (username,)
+        )
+        user = cursor.fetchone()
+
+        if user and verify_password(password, user["password"]):
+            st.session_state.logged_in = True
+            st.session_state.user_id = user["id"]
+            st.session_state.username = user["username"]
+
+            cursor.execute(
+                """
+                SELECT prompt, sql_query, created_at
+                FROM query_logs
+                WHERE user_id = %s
+                ORDER BY created_at DESC
+                """,
+                (user["id"],)
+            )
+
+            rows = cursor.fetchall()
+
+            st.session_state["prompt_history"] = [
+                {
+                    "prompt": r["prompt"],
+                    "sql": r["sql_query"],
+                    "timestamp": r["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
+                    "username": user["username"]
+                }
+                for r in rows
+            ]
+
+            st.success("Login successful")
+            st.rerun()
+        else:
+            st.error("Invalid credentials")
+
+        cursor.close()
+        conn.close()
+
+    if signup_clicked:
+        st.session_state.auth_page = "signup"
+        st.rerun()
+def signup_page():
+    st.markdown("<h2 style='text-align:center'>📝 Signup</h2>", unsafe_allow_html=True)
+
+    left, center, right = st.columns([2, 3, 2])
+
+    with center:
+        username = st.text_input("Choose username", key="signup_user")
+        password = st.text_input("Choose password", type="password", key="signup_pass")
+
+        st.write("")
+
+        col1, col2 = st.columns(2)
+
+        signup_clicked = col1.button("Signup", key="signup_btn", use_container_width=True)
+        back_clicked = col2.button("Back to Login", key="back_login", use_container_width=True)
+
+    if signup_clicked:
+        if not username or not password:
+            st.warning("Username and password required")
+            return
+        valid_user, user_msg = is_valid_username(username)
+        if not valid_user:
+           st.warning(user_msg)
+           return
+        valid, msg = is_valid_password(password)
+        if not valid:
+            st.warning(msg)
+            return
+        
+        hashed_pw = hash_password(password)
+
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "INSERT INTO users (username, password) VALUES (%s, %s)",
+                (username, hashed_pw)
+            )
+            conn.commit()
+
+            st.success("Signup successful, please login")
+            st.session_state.auth_page = "login"
+            st.session_state["_signup_done"] = True
+            st.rerun()
+
+        except IntegrityError:
+            st.error("Username already exists")
+
+        finally:
+            cursor.close()
+            conn.close()
+
+    if back_clicked:
+        st.session_state.auth_page = "login"
+        st.rerun()
+
+if not st.session_state.logged_in:
+    if st.session_state.auth_page == "login":
+        login_page()
+    else:
+        signup_page()
+
+    st.stop()
 
 st.title("Talk2DB")
 
@@ -150,7 +321,7 @@ with st.sidebar:
     
     # Table selection with improved layout
     st.markdown("### Database Tables")
-    selected_table = st.selectbox("Select a Table", ["None"] + list(schema.keys()))
+    selected_table = st.selectbox("Select a Table", ["None"] + tables)
     
     if selected_table and selected_table != "None":
         with st.expander(f" {selected_table} Schema", expanded=False):
@@ -188,6 +359,11 @@ with st.sidebar:
                 st.code(history_item["sql"], language='sql')
     else:
         st.info("No query history yet")
+    st.sidebar.markdown(f"👤 {st.session_state.username}")
+
+    if st.sidebar.button("Logout"):
+        st.session_state.clear()
+        st.rerun()
 
 # Main content area
 st.markdown("### Enter Your Query")
@@ -246,6 +422,24 @@ with row1_col2:
                         "timestamp": current_time,
                         "username": username
                     })
+                    conn = mysql.connector.connect(**DB_CONFIG)
+                    cursor = conn.cursor()
+
+                    cursor.execute(
+                        """
+                        INSERT INTO query_logs (user_id, prompt, sql_query)
+                        VALUES (%s, %s, %s)
+                        """,
+                        (
+                            st.session_state.user_id,
+                            st.session_state["user_input"],
+                            sql_query
+                        )
+                    )
+
+                    conn.commit()
+                    cursor.close()
+                    conn.close()
         else:
             st.warning("Please enter a query first.")
 
