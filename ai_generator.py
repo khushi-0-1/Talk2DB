@@ -39,7 +39,7 @@ Rules:
 """
 
 def get_gemini_response(prompt):
-    store_all_table_structures(force_update=True)  #   Ensure schema is fresh
+    store_all_table_structures(force_update=True)  
 
     schema = load_schema()
     translated_prompt = translate_to_english(prompt)

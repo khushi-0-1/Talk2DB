@@ -319,7 +319,7 @@ st.title("Talk2DB")
 with st.sidebar:
     st.image("logo.png", use_container_width=True)
     
-    # Table selection with improved layout
+    # Table selection 
     st.markdown("### Database Tables")
     selected_table = st.selectbox("Select a Table", ["None"] + tables)
     
@@ -343,7 +343,7 @@ with st.sidebar:
         default=st.session_state["selected_languages"]
     )
     
-    # History section with improved layout
+    # History section
     st.markdown("---")
     st.markdown("### Query History")
     
