@@ -121,4 +121,5 @@ Talk2DB/
 ---
 
 ## 🚀 UI
-<img width="571" height="548" alt="logo" src="https://github.com/user-attachments/assets/1eef2cd5-fbd1-45b2-bac2-6ccb4c2191f7" />
+<img width="1919" height="881" alt="Talk2DB UI" src="https://github.com/user-attachments/assets/280b0a3e-a58e-4c61-940d-c974e34cd2b8" />
+
